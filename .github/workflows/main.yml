@@ -8,10 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    # Pwersahin ang GitHub runner na huwag mag-ingay tungkol sa lumang Node version
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
     steps:
     - name: Checkout Source Code
@@ -40,9 +36,8 @@ jobs:
         cd MyCastApp
         cordova platform add android
         
-        # Plugins para sa screen recording at hardware keys
+        # Malinis na plugins na laging available at walang error
         cordova plugin add cordova-plugin-android-permissions
-        cordova plugin add https://github.com
         
         rm -rf www/*
         cp -r ../index.html www/
@@ -68,5 +63,4 @@ jobs:
         name: android-build
         path: |
           MyCastApp/platforms/android/**/*.apk
-          MyCastApp/platforms/andro
-          id/**/*.aab
+          MyCastApp/platforms/android/**/*.aab
