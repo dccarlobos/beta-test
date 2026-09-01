@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Sender</title>
+    <style>
+        body { font-family: Arial; background: #121212; color: white; text-align: center; padding: 20px; }
+        .btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; width: 100%; max-width: 300px; }
+        .status { margin-top: 20px; font-style: italic; color: #aaa; }
+    </style>
+</head>
+<body>
+    <h1>PHONE SENDER</h1>
+    <p>Gamitin ito para i-share ang screen ng phone mo sa TV.</p>
+    
+    <button id="btn-share" class="btn">I-SHARE ANG SCREEN</button>
+    <div id="status" class="status">Nagloload...</div>
+
+    <script src="peerjs.min.js"></script>
+    <script>
+        const peer = new Peer();
+        const btnShare = document.getElementById('btn-share');
+        const statusDiv = document.getElementById('status');
+
+        peer.on('open', (id) => {
+            statusDiv.innerText = "Phone connected. ID mo ay: " + id;
+        });
+
+        btnShare.addEventListener('click', async () => {
+            try {
+                statusDiv.innerText = "Humihingi ng permiso sa screen...";
+                const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+                
+                // Dito lalabas ang prompt box para i-type mo ang ID na nakasulat sa TV screen
+                const tvId = prompt("Ilagay ang ID na nakikita sa screen ng iyong TV:");
+                
+                if (tvId) {
+                    statusDiv.innerText = "Kumokonekta sa TV...";
+                    peer.call(tvId, stream);
+                    statusDiv.innerText = "Status: Kasalukuyang nag-ca-cast sa TV!";
+                } else {
+                    statusDiv.innerText = "Kinansela ang pag-cast.";
+                }
+            } catch (err) {
+                statusDiv.innerText = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
