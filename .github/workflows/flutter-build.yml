@@ -1,0 +1,38 @@
+name: Build Native APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: I-checkout ang Code Mo
+      uses: actions/checkout@v4
+
+    - name: I-setup ang Java (Kailangan ng Android)
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: I-setup ang Flutter Framework
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.x' # Modern at stable na bersyon ng Flutter
+        channel: 'stable'
+
+    - name: I-download ang Dependecies
+      run: flutter pub get
+
+    - name: I-compile at i-build ang APK
+      run: flutter build apk --debug # Gagamit muna tayo ng debug build para mabilis ma-compile
+
+    - name: I-upload ang APK para ma-download mo
+      uses: actions/upload-artifact@v4
+      with:
+        name: NativeGalleryAPK
+        path: build/app/outputs/flutter-apk/app-debug.apk
+        
