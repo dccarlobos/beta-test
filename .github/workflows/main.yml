@@ -64,3 +64,4 @@ jobs:
         path: |
           MyCastApp/platforms/android/**/*.apk
           MyCastApp/platforms/android/**/*.aab
+
