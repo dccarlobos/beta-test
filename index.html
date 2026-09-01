@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone File Sender</title>
+    <style>
+        body { font-family: Arial; background: #121212; color: white; text-align: center; padding: 20px; }
+        .btn-wrapper { margin: 20px auto; max-width: 300px; position: relative; }
+        .file-input { width: 100%; height: 50px; opacity: 0; position: absolute; left: 0; top: 0; cursor: pointer; }
+        .fake-btn { background: #007bff; color: white; padding: 15px; border-radius: 5px; font-size: 18px; font-weight: bold; display: block; }
+        .status { margin-top: 20px; font-style: italic; color: #aaa; }
+    </style>
+</head>
+<body>
+    <h1>PHONE VIDEO SENDER</h1>
+    <p>Piliin ang maikling video mula sa iyong gallery para i-play sa TV.</p>
+    
+    <div class="btn-wrapper">
+        <div class="fake-btn">PILIIN ANG VIDEO</div>
+        <!-- Dito mo pipiliin ang file sa phone mo -->
+        <input type="file" id="video-file" class="file-input" accept="video/*">
+    </div>
+    
+    <div id="status" class="status">Nagloload...</div>
+
+    <script src="peerjs.min.js"></script>
+    <script>
+        const peer = new Peer();
+        const fileInput = document.getElementById('video-file');
+        const statusDiv = document.getElementById('status');
+
+        peer.on('open', (id) => {
+            statusDiv.innerText = "Phone Ready. ID mo ay: " + id;
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            statusDiv.innerText = "Inihahanda ang video file...";
+
+            // Gumawa ng nakatagong HTML5 video player para i-stream ang file
+            const videoElement = document.createElement('video');
+            videoElement.src = URL.createObjectURL(file);
+            videoElement.muted = true;
+            videoElement.playsInline = true;
+            
+            videoElement.onloadedmetadata = () => {
+                videoElement.play();
+                
+                // Kunin ang video stream mula sa file player nang walang kumplikadong recording plugins!
+                let stream;
+                if (videoElement.captureStream) {
+                    stream = videoElement.captureStream();
+                } else if (videoElement.mozCaptureStream) {
+                    stream = videoElement.mozCaptureStream();
+                }
+
+                const tvId = prompt("Ilagay ang ID na nakikita sa screen ng iyong TV:", "aking-android-tv-999");
+                
+                if (tvId && stream) {
+                    statusDiv.innerText = "Ipinapadala ang video sa TV...";
+                    peer.call(tvId, stream);
+                    statusDiv.innerText = "Status: Nagpe-play na ang video mo sa TV!";
+                } else {
+                    statusDiv.innerText = "Kinansela o hindi nakuha ang stream.";
+                    videoElement.pause();
+                }
+            };
+        });
+    </script>
+</body>
+</html>
