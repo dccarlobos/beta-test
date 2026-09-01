@@ -1,4 +1,4 @@
-name: Build Native APK
+name: Build Signed Native APK
 
 on:
   push:
@@ -9,30 +9,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. I-checkout ang Code (Updated sa Node 24 compatible version)
     - name: I-checkout ang Code Mo
       uses: actions/checkout@v4
 
+    # 2. I-setup ang Java (Migrated sa v5 para sa Node 24 support)
     - name: I-setup ang Java (Kailangan ng Android)
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
 
+    # 3. I-setup ang Flutter Framework
     - name: I-setup ang Flutter Framework
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x' # Modern at stable na bersyon ng Flutter
+        flutter-version: '3.24.x'
         channel: 'stable'
 
+    # 4. I-restore ang iyong Keystore File mula sa GitHub Secrets
+    - name: I-restore ang Keystore File
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/dccarlobos-key.jks
+
+    # 5. I-download ang Dependecies
     - name: I-download ang Dependecies
       run: flutter pub get
 
-    - name: I-compile at i-build ang APK
-      run: flutter build apk --debug # Gagamit muna tayo ng debug build para mabilis ma-compile
+    # 6. I-compile at i-sign ang Release APK
+    - name: I-build ang Signed Release APK
+      run: |
+        flutter build apk --release \
+          --dart-define=KEYSTORE_FILE=dccarlobos-key.jks \
+          --dart-define=KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+          --dart-define=KEY_ALIAS=${{ secrets.KEY_ALIAS }} \
+          --dart-define=KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
-    - name: I-upload ang APK para ma-download mo
+    # 7. I-upload ang Naka-sign na APK bilang Artifact
+    - name: I-upload ang Android Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: NativeGalleryAPK
-        path: build/app/outputs/flutter-apk/app-debug.apk
+        name: NativeGallery-SignedAPK
+        path: build/app/outputs/flutter-apk/app-release.apk
+       path: build/app/outputs/flutter-apk/app-debug.apk
         
