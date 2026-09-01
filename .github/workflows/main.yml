@@ -9,17 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-name: Build Android APK
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Source Code
       uses: actions/checkout@v4
@@ -75,27 +64,5 @@ jobs:
         name: android-build
         path: |
           MyCastApp/platforms/android/**/*.apk
-          MyCastApp/platforms/android/**/*.aab
-
-
-    - name: Restore Keystore
-      run: |
-        cd MyCastApp
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > dccarlobos-key.jks
-
-    - name: Build Signed Release APK
-      run: |
-        cd MyCastApp
-        cordova build android --release \
-        -- --keystore=dccarlobos-key.jks \
-        --storePassword=${{ secrets.KEYSTORE_PASSWORD }} \
-        --alias=${{ secrets.KEY_ALIAS }} \
-        --password=${{ secrets.KEY_PASSWORD }}
-
-    - name: Upload Android Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-build
-        path: |
-          MyCastApp/platforms/android/**/*.apk
-          MyCastApp/platforms/android/**/*.aab
+          MyCastApp/platforms/andro
+          id/**/*.aab
