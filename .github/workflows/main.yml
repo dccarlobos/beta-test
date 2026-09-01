@@ -16,13 +16,13 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '24' # Ini-update sa Node 24 para tugma sa GitHub runner
+        node-version: '24'
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '17' # Ini-update sa JDK 17 para hindi mag-error ang sdkmanager
+        java-version: '17'
 
     - name: Install Android SDK
       uses: android-actions/setup-android@v3
@@ -35,8 +35,6 @@ jobs:
         cordova create MyCastApp com.example.mycastapp MyCastApp
         cd MyCastApp
         cordova platform add android
-        
-        # Burahin ang default files ng Cordova at ipalit ang code mo mula sa Acode
         rm -rf www/*
         cp -r ../index.html www/
         cp -r ../peerjs.min.js www/
@@ -46,8 +44,16 @@ jobs:
         cd MyCastApp
         cordova build android --release
 
+    # HAKBANG NA NAGHAHANAP AT NAGLILIPAT NG APK PARA SIGURADONG MAKUHA
+    - name: Find and Move APK
+      run: |
+        mkdir -p output-apk
+        find MyCastApp/platforms/android/ -name "*.apk" -exec cp {} output-apk/ \;
+        echo "Mga nahanap na APK file:"
+        ls -l output-apk/
+
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: my-cast-app-apk
-        path: MyCastApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
+        path: output-apk/
