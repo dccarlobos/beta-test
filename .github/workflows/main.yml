@@ -19,7 +19,7 @@ jobs:
         node-version: '24'
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5 # Ini-update mula v4 papuntang v5 para mawala ang deprecation warning
       with:
         distribution: 'zulu'
         java-version: '17'
@@ -36,7 +36,7 @@ jobs:
         cd MyCastApp
         cordova platform add android
         
-        # MGA KINAKAILANGANG PLUGINS PARA GUMANA ANG SCREEN RECORDING AT NETWORK
+        # Mga plugins para sa screen recording hardware at permissions
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add https://github.com
         
@@ -64,5 +64,4 @@ jobs:
         name: android-build
         path: |
           MyCastApp/platforms/android/**/*.apk
-          MyCastApp/platforms/andro
-          id/**/*.aab
+          MyCastApp/platforms/android/**/*.aab
