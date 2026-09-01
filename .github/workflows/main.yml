@@ -39,21 +39,24 @@ jobs:
         cp -r ../index.html www/
         cp -r ../peerjs.min.js www/
 
-    - name: Build Android APK
+    - name: Restore Keystore
       run: |
         cd MyCastApp
-        cordova build android --release
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > dccarlobos-key.jks
 
-    # HAKBANG NA NAGHAHANAP AT NAGLILIPAT NG APK PARA SIGURADONG MAKUHA
-    - name: Find and Move APK
+    - name: Build Signed Release APK
       run: |
-        mkdir -p output-apk
-        find MyCastApp/platforms/android/ -name "*.apk" -exec cp {} output-apk/ \;
-        echo "Mga nahanap na APK file:"
-        ls -l output-apk/
+        cd MyCastApp
+        cordova build android --release \
+        -- --keystore=dccarlobos-key.jks \
+        --storePassword=${{ secrets.KEYSTORE_PASSWORD }} \
+        --alias=${{ secrets.KEY_ALIAS }} \
+        --password=${{ secrets.KEY_PASSWORD }}
 
-    - name: Upload APK Artifact
+    - name: Upload Android Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: my-cast-app-apk
-        path: output-apk/
+        name: android-build
+        path: |
+          MyCastApp/platforms/android/**/*.apk
+          MyCastApp/platforms/android/**/*.aab
