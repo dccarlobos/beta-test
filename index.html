@@ -27,25 +27,34 @@
             statusDiv.innerText = "Phone connected. ID mo ay: " + id;
         });
 
-        btnShare.addEventListener('click', async () => {
-            try {
-                statusDiv.innerText = "Humihingi ng permiso sa screen...";
-                const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
-                
-                // Dito lalabas ang prompt box para i-type mo ang ID na nakasulat sa TV screen
-                const tvId = prompt("Ilagay ang ID na nakikita sa screen ng iyong TV:");
-                
-                if (tvId) {
-                    statusDiv.innerText = "Kumokonekta sa TV...";
-                    peer.call(tvId, stream);
-                    statusDiv.innerText = "Status: Kasalukuyang nag-ca-cast sa TV!";
-                } else {
-                    statusDiv.innerText = "Kinansela ang pag-cast.";
-                }
-            } catch (err) {
-                statusDiv.innerText = "Error: " + err.message;
+btnShare.addEventListener('click', async () => {
+    try {
+        statusDiv.innerText = "Inihahanda ang recorder...";
+
+        // Gagamit tayo ng native plugin para sa screen stream
+        // Ito ay gumagana nang direkta sa mga Android APK wrapper
+        window.plugins.screenrecorder.startAndGetStream(async (stream) => {
+            
+            // Dito na lalabas ang prompt box kapag nakuha ang stream
+            const tvId = prompt("Ilagay ang ID na nakikita sa screen ng iyong TV:");
+            
+            if (tvId) {
+                statusDiv.innerText = "Kumokonekta sa TV...";
+                peer.call(tvId, stream);
+                statusDiv.innerText = "Status: Kasalukuyang nag-ca-cast sa TV!";
+            } else {
+                statusDiv.innerText = "Kinansela ang pag-cast.";
             }
+            
+        }, (error) => {
+            statusDiv.innerText = "Error sa pag-record: " + error;
         });
+
+    } catch (err) {
+        statusDiv.innerText = "Error: " + err.message;
+    }
+});
+
     </script>
 </body>
 </html>
