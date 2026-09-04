@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.dccarlo.screenmirror'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.dccarlo.screenmirror'
+        minSdk 30
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+    }
+
+    signingConfigs {
+        release {
+            if (project.hasProperty("KEYSTORE_FILE")) {
+                storeFile file(project.property("KEYSTORE_FILE"))
+                storePassword project.property("KEYSTORE_PASSWORD")
+                keyAlias project.property("KEY_ALIAS")
+                keyPassword project.property("KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation 'io.github.webrtc-sdk:android:150.7871.01'
+}
