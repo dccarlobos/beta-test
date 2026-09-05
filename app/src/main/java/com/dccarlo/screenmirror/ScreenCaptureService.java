@@ -87,7 +87,7 @@ public class ScreenCaptureService extends Service {
             return START_NOT_STICKY;
         }
 
-        if (resultCode != RESULT_OK) {
+        if (resultCode != android.app.Activity.RESULT_OK) {
             Log.e(TAG, "Screen capture permission was not granted");
             stopSelf();
             return START_NOT_STICKY;
